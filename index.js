@@ -18,6 +18,17 @@ app.use(cors({
     res.json('Hello World!');
     });
 app.use(config);
+app.use((req, res, next) => {
+  const allowedOrigin = "https://blog-app-frontend-sandy.vercel.app"; // Replace with your frontend domain
+  const requestOrigin = req.get("origin");
+
+  if (requestOrigin !== allowedOrigin) {
+    res.json({ error: "Not allowed" }); // Add quotes around "error"
+  } else {
+    next();
+  }
+});
+
 app.use('/api/auth',LoginRoute);
 app.use('/api/newuser',SignupRoute);
 app.use('/api/blog',BlogPostApi);
