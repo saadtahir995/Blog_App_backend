@@ -13,6 +13,9 @@ app.use(cors({
     credentials: true, // To allow cookies, authorization headers, etc. (important for 'include')
      optionsSuccessStatus:200 
   }));
+  app.get('/', (req, res) => {
+    res.send('Hello World!');
+    });
 app.use(config);
 app.use('/api/auth',LoginRoute);
 app.use('/api/newuser',SignupRoute);
