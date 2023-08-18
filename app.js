@@ -14,7 +14,7 @@ app.use(cors({
      optionsSuccessStatus:200 
   }));
   app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.json('Hello World!');
     });
 app.use(config);
 app.use('/api/auth',LoginRoute);
@@ -23,7 +23,7 @@ app.use('/api/blog',BlogPostApi);
 app.use('/api/data',UserDataApi);
 app.use('/api/review',FeedbackApi);
 app.use('/api/reset-password',PasswordResetApi);
-app.listen(9000, () => {
+app.listen(3001, () => {
     console.log('Server started!');
     }
 );
