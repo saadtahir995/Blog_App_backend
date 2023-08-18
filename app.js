@@ -8,13 +8,11 @@ import FeedbackApi from './API/feedback.js';
 import PasswordResetApi from './API/ResetPwd.js';
 import cors from 'cors'
 const app = express();
-app.use(cors());
-//helloooo
-/*app.use(cors({
-    origin: 'http://192.168.43.52:3000',
+app.use(cors({
+    origin: '',
     credentials: true, // To allow cookies, authorization headers, etc. (important for 'include')
      optionsSuccessStatus:200 
-  }));*/
+  }));
 app.use(config);
 app.use('/api/auth',LoginRoute);
 app.use('/api/newuser',SignupRoute);
