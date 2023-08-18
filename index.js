@@ -14,9 +14,6 @@ app.use(cors({
     credentials: true, // To allow cookies, authorization headers, etc. (important for 'include')
      optionsSuccessStatus:200 
   }));
-  app.get('/', (req, res) => {
-    res.json('Hello World!');
-    });
 app.use(config);
 app.use((req, res, next) => {
   const allowedOrigin = "https://blog-app-frontend-sandy.vercel.app"; // Replace with your frontend domain
@@ -28,6 +25,9 @@ app.use((req, res, next) => {
     next();
   }
 });
+ app.get('/', (req, res) => {
+    res.json('Hello World!');
+    });
 
 app.use('/api/auth',LoginRoute);
 app.use('/api/newuser',SignupRoute);
