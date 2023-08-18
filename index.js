@@ -10,7 +10,7 @@ import cors from 'cors'
 const app = express();
 app.use(cors({
     origin: ["https://blog-app-frontend-sandy.vercel.app"],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ["POST", "GET","PUT","DELETE"],
     credentials: true, // To allow cookies, authorization headers, etc. (important for 'include')
      optionsSuccessStatus:200 
   }));
