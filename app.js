@@ -9,7 +9,7 @@ import PasswordResetApi from './API/ResetPwd.js';
 import cors from 'cors'
 const app = express();
 app.use(cors());
-//hello
+//helloooo
 /*app.use(cors({
     origin: 'http://192.168.43.52:3000',
     credentials: true, // To allow cookies, authorization headers, etc. (important for 'include')
