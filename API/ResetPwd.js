@@ -78,12 +78,12 @@ app.post('/request',Middleware, async (req, res) => {
         
         `,
       };
-       transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log(error);
-        }
+      const sendmsg=async()=>{
+       await transporter.sendMail(mailOptions)
       }
-        );
+      await sendmsg();
+        
+        
     res.status(200).json({message:"Reset code sent to your email",
 success:true});
 })
