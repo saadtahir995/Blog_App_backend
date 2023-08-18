@@ -9,7 +9,7 @@ import PasswordResetApi from './API/ResetPwd.js';
 import cors from 'cors'
 const app = express();
 app.use(cors({
-    origin: '',
+    origin: ["https://blog-app-frontend-sandy.vercel.app"],
     credentials: true, // To allow cookies, authorization headers, etc. (important for 'include')
      optionsSuccessStatus:200 
   }));
