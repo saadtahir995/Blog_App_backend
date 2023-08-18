@@ -4,7 +4,7 @@ import Middleware from '../Middleware/loginAuth.js'
 import jwt from 'jsonwebtoken'
 const app = express();
 app.use(config);
-const Secret_key='Fuckoff6969'
+const Secret_key=process.env.SECRET_KEY
 app.post('/login',Middleware, async(req, res) => {
     const user={id:req.id,
         username:req.user
