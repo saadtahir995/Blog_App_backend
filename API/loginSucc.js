@@ -12,7 +12,7 @@ app.post('/login',Middleware, async(req, res) => {
         username:req.user
     }
       const token= jwt.sign(user,Secret_key);
-      res.cookie('token',token,{ maxAge: 86400000, httpOnly: true,sameSite: 'None' });
+      res.cookie('token',token,{ maxAge: 86400000, httpOnly: true,sameSite: 'None',secure:true });
     return res.status(200).json({
         message: 'Login Successful',
         isLoggedin: true,
