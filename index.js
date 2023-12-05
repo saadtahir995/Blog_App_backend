@@ -15,7 +15,7 @@ app.use(cors({
      optionsSuccessStatus:200 
   }));
 app.use(config);
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
   const allowedOrigin = "https://blog-app-frontend-sandy.vercel.app"; // Replace with your frontend domain
   const requestOrigin = req.get("origin");
 
@@ -24,7 +24,7 @@ app.use((req, res, next) => {
   } else {
     next();
   }
-});
+});*/
  app.get('/', (req, res) => {
     res.json('Hello World!');
     });
