@@ -107,15 +107,23 @@ app.post('/addcomment',async(req,res)=>{
     try{
         const {newComment,postId,authorid}=req.body;
         const publish_date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        await db.execute(`INSERT INTO Comments(post_id,user_id,comment_text,comment_date) VALUES('${postId}','${authorid}','${newComment}','${publish_date}')`);
-        const [rows, fields] = await db.execute('SELECT LAST_INSERT_ID() AS comment_id');
-         return res.status(200).json({message:"Comment added.",id:rows[0].comment_id});
-    }catch(err){
-        console.log(err);
-        return res.status(501).json({message:"internal Server Error"})
+        
+        // Use parameterized query to prevent SQL injection and handle special characters
+        const [result] = await db.execute(
+            'INSERT INTO Comments(post_id, user_id, comment_text, comment_date) VALUES (?, ?, ?, ?)',
+            [postId, authorid, newComment, publish_date]
+        );
+        
+        const [rows] = await db.execute('SELECT LAST_INSERT_ID() AS comment_id');
+        return res.status(200).json({
+            message: "Comment added.",
+            id: rows[0].comment_id
+        });
+    } catch(err) {
+        console.error('Error adding comment:', err);
+        return res.status(500).json({message: "Failed to add comment"});
     }
-}
-);
+});
 app.get('/getcomments/:id',async(req,res)=>{
     try{
         const {id}=req.params;
