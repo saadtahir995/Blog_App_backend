@@ -18,25 +18,41 @@ app.post('/postmaker',async(req,res)=>{
 });
 app.get('/getallposts/:id',async(req,res)=>{
     try{
-        const {id} =req.params;
-        const [rows, fields] = await db.execute(`
-        SELECT
-    BlogPosts.*,
-    Users.username,
-    (SELECT COUNT(*) FROM Comments WHERE Comments.post_id = BlogPosts.post_id) AS comment_count,
-    (SELECT COUNT(*) FROM Likes WHERE Likes.post_id = BlogPosts.post_id) AS like_count,
-    IF(Likes.user_id = ${id}, 1, 0) AS is_liked_by_current_user
-FROM BlogPosts
-JOIN Users ON BlogPosts.author_id = Users.user_id
-LEFT JOIN Likes ON Likes.post_id = BlogPosts.post_id AND Likes.user_id = ${id}
-ORDER BY BlogPosts.published_date DESC;`);
-        return res.status(200).json({rows});
+        const {id} = req.params;
+        // Check if it's a guest user
+        if(id.startsWith('guest_')) {
+            // For guest users, show all posts without like information
+            const [rows, fields] = await db.execute(`
+            SELECT
+                BlogPosts.*,
+                Users.username,
+                (SELECT COUNT(*) FROM Comments WHERE Comments.post_id = BlogPosts.post_id) AS comment_count,
+                (SELECT COUNT(*) FROM Likes WHERE Likes.post_id = BlogPosts.post_id) AS like_count,
+                0 AS is_liked_by_current_user
+            FROM BlogPosts
+            JOIN Users ON BlogPosts.author_id = Users.user_id
+            ORDER BY BlogPosts.published_date DESC;`);
+            return res.status(200).json({rows});
+        } else {
+            // For regular users, show posts with their like information
+            const [rows, fields] = await db.execute(`
+            SELECT
+                BlogPosts.*,
+                Users.username,
+                (SELECT COUNT(*) FROM Comments WHERE Comments.post_id = BlogPosts.post_id) AS comment_count,
+                (SELECT COUNT(*) FROM Likes WHERE Likes.post_id = BlogPosts.post_id) AS like_count,
+                IF(Likes.user_id = ${id}, 1, 0) AS is_liked_by_current_user
+            FROM BlogPosts
+            JOIN Users ON BlogPosts.author_id = Users.user_id
+            LEFT JOIN Likes ON Likes.post_id = BlogPosts.post_id AND Likes.user_id = ${id}
+            ORDER BY BlogPosts.published_date DESC;`);
+            return res.status(200).json({rows});
+        }
     }catch(err){
         console.log(err);
         return res.status(501).json({message:"internal Server Error"})
     }
-}
-);
+});
 app.get('/getposts/:id',async(req,res)=>{
     try{
         const {id}=req.params;
