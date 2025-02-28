@@ -105,7 +105,16 @@ app.put('/updatepost/:id',async(req,res)=>{
 
 app.post('/addcomment',async(req,res)=>{
     try{
+        console.log('Received comment data:', req.body); // Debug log
         const {newComment,postId,authorid}=req.body;
+        
+        if (!newComment || !postId || !authorid) {
+            return res.status(400).json({
+                message: "Missing required fields",
+                received: { newComment, postId, authorid }
+            });
+        }
+
         const publish_date = new Date().toISOString().slice(0, 19).replace('T', ' ');
         
         // Use parameterized query to prevent SQL injection and handle special characters
@@ -121,38 +130,55 @@ app.post('/addcomment',async(req,res)=>{
         });
     } catch(err) {
         console.error('Error adding comment:', err);
-        return res.status(500).json({message: "Failed to add comment"});
+        console.error('Stack trace:', err.stack);
+        return res.status(500).json({
+            message: "Failed to add comment",
+            error: err.message
+        });
     }
 });
 app.get('/getcomments/:id',async(req,res)=>{
     try{
-        const {id}=req.params;
+        const {id} = req.params;
+        
+        // Use parameterized query
         const [rows, fields] = await db.execute(`
-        SELECT Comments.*, Users.username
-        FROM Comments
-        JOIN Users ON Comments.user_id = Users.user_id
-        WHERE Comments.post_id = ${id}
-        ORDER BY Comments.comment_date DESC
-      `);
+            SELECT Comments.*, Users.username
+            FROM Comments
+            JOIN Users ON Comments.user_id = Users.user_id
+            WHERE Comments.post_id = ?
+            ORDER BY Comments.comment_date DESC
+        `, [id]);
+        
         return res.status(200).json({rows});
-    }catch(err){
-        console.log(err);
-        return res.status(501).json({message:"internal Server Error"})
+    } catch(err) {
+        console.error('Error getting comments:', err);
+        return res.status(500).json({
+            message: "Failed to get comments",
+            error: err.message
+        });
     }
-}
-);
+});
 app.put('/updatecomment',async(req,res)=>{
     try{
         const {commentid,newComment}=req.body;
-        const publish_date = new Date();
-        await db.execute(`UPDATE Comments SET comment_text='${newComment}',comment_date='${publish_date}' WHERE comment_id='${commentid}'`);
+        const publish_date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        
+        // Use parameterized query
+        await db.execute(
+            'UPDATE Comments SET comment_text = ?, comment_date = ? WHERE comment_id = ?',
+            [newComment, publish_date, commentid]
+        );
+        
         return res.status(200).json({message:"Comment updated."});
-    }catch(err){
-        console.log(err);
-        return res.status(501).json({message:"internal Server Error"})
+    } catch(err) {
+        console.error('Error updating comment:', err);
+        return res.status(500).json({
+            message: "Failed to update comment",
+            error: err.message
+        });
     }
-}
-);
+});
 app.post('/addlike',likemiddleware,async(req,res)=>{
     try{
         const {postId,authorid}=req.body;
